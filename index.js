@@ -27,7 +27,8 @@ const maxToAuto = 5;
 
 var data = {
 	users: [],
-	clanMessages: []
+	clanMessages: [],
+	guildOpts: {}
 }
 
 function whois(id) {
@@ -49,13 +50,13 @@ var msgHandler = {
 			if (existUser) {
 				existUser.krunkerName = kName;
 			} else {
-				var data = {
+				var userData = {
 					username: msg.author.username,
 					rating: 1,
 					id: msg.author.id,
 					krunkerName: kName
 				};
-				data.users.push(data);
+				data.users.push(userData);
 				console.log('New user');
 			}
 			save();
@@ -244,7 +245,7 @@ async function runRates() {
 	}
 	var user = data.users[userIdx];
 	if (user) {
-		var rating = await kRate(data.users.krunkerName);
+		var rating = await kRate(user.krunkerName);
 		if (rating) {
 			user.rating = rating;
 		} else {
