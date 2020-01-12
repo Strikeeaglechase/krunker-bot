@@ -119,7 +119,7 @@ var msgHandler = {
 			displayBoard(msg, data.users);
 		}
 	},
-	clanadd: {
+	addclan: {
 		description: 'Add clan info message, usage: clanadd [clanName]',
 		run: async function(msg) {
 			var args = msg.content.split(' ');
@@ -209,6 +209,7 @@ async function updateClanData(idx) {
 			emb.setDescription('Score: ' + clanData.clan_score);
 			emb.setFooter(clanData.members.length + ' members');
 			emb.addField('Members', clanData.members.map(memb => memb.player_name).join('\n'));
+			emb.setURL('https://krunker.io/social.html?p=clan&q=' + clanData.clan_name);
 			try {
 				var guild = client.guilds.get(data.clanMessages[idx].guildId);
 				if (guild) {
