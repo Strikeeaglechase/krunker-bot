@@ -308,7 +308,8 @@ async function runLookups() {
 			var data = await Krunker.GetProfile(lookup.name);
 			lookup.onFinish(data);
 		} catch (e) {
-			lookup.onError(e);
+			lookup.onFinish(undefined);
+			// lookup.onError(e);
 		}
 	}
 	setTimeout(runLookups);
