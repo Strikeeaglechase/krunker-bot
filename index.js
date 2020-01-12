@@ -23,6 +23,7 @@ const rateOpts = {
 }
 var userIdx = 0;
 var lookups = [];
+var lastRateTick = Date.now();
 const maxToAuto = 5;
 
 var data = {
@@ -248,6 +249,7 @@ async function updateClanData(idx) {
 }
 
 async function runRates() {
+	lastRateTick = Date.now();
 	if (lookups.length > maxToAuto) {
 		console.log('Bot under load');
 		return;
@@ -401,3 +403,8 @@ runLookups();
 runRates();
 updateClanData(0);
 setInterval(save, 10000);
+setInterval(() => {
+	if (Date.now() - lastRateTick > 10000) {
+		console.log('Bot running behind (%s)', Date.now() - lastRateTick);
+	}
+}, 1000);
