@@ -28,7 +28,7 @@ const maxToAuto = 5;
 var data = {
 	users: [],
 	clanMessages: [],
-	guildOpts: {}
+	clanRoleGuilds: []
 }
 
 function whois(id) {
@@ -132,6 +132,18 @@ var msgHandler = {
 					guildId: msg.guild.id,
 					clanName: args[1]
 				});
+			}
+		}
+	},
+	toggleclanroles: {
+		description: 'Decide if members should get clan roles',
+		run: function(msg) {
+			if (data.clanRoleGuilds.includes(msg.guild.id)) {
+				data.clanRoleGuilds = data.clanRoleGuilds.filter(guild => msg.guild.id != guild);
+				msg.channel.send('Clan roles are now disabled');
+			} else {
+				data.clanRoleGuilds.push(msg.guild.id);
+				msg.channel.send('Clan roles are now enabled');
 			}
 		}
 	},
@@ -249,8 +261,31 @@ async function runRates() {
 		var rating = await kRate(user.krunkerName);
 		if (rating) {
 			user.rating = rating;
-		} else {
-			// console.log('Rating faild for %s', user.username);
+		}
+		var userData = await getProfile(user.krunkerName);
+		if (userData && userData.clan) {
+			var clan = '[' + userData.clan + ']'
+			data.clanRoleGuilds.forEach(async guildId => {
+				var guild = client.guilds.get(guildId);
+				if (guild) {
+					var member = guild.members.get(user.id);
+					if (member) {
+						try {
+							var role = guild.roles.find(r => r.name == clan);
+							if (role) {
+								member.addRole(role);
+							} else {
+								role = await guild.createRole({
+									name: clan
+								});
+								member.addRole(role);
+							}
+						} catch (e) {}
+					}
+				} else {
+					data.clanRoleGuilds = data.clanRoleGuilds.filter(gId => gId != guildId);
+				}
+			});
 		}
 	}
 	setTimeout(runRates, 5000);
